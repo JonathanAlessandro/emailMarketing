@@ -1,0 +1,21 @@
+{
+  "name": "script-envio-emails",
+  "version": "1.0.0",
+  "description": "Production-ready Node.js email sender with Brevo and MVC architecture",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@getbrevo/brevo": "^2.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.1",
+    "ejs": "^3.1.3",
+    "express": "^4.21.2",
+    "mysql2": "^3.1.0",
+    "sequelize": "^6.6.2",
+    "validator": "^13.5.1"
+  }
+}
