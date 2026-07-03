@@ -21,6 +21,7 @@ async function sendClientListEmails(req, res, next) {
     for (const client of clients) {
       const htmlContent = await ejs.renderFile(templatePath, {
         name: client.name || client.email,
+        emailCliente: client.email,
         link,
       });
 

@@ -1,61 +1,21 @@
-const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
-const CLIENT_LIST_TABLE = process.env.CLIENT_LIST_TABLE;
 
-const Cliente = sequelize.define('Cliente', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  },
-  nome: {
-    type: DataTypes.STRING(255),
-    allowNull: false,
-  },
-  email: {
-    type: DataTypes.STRING(255),
-    allowNull: false,
-  },
-}, {
-  tableName: CLIENT_LIST_TABLE,
-});
+const CLIENT_LIST_TABLE = String(process.env.CLIENT_LIST_TABLE || 'clientes_lista_aleatoria').trim();
 
 class ClienteModel {
-  async selectAllClients() {
-    return await Cliente.findAll();
-  }
-
-  async selectClientById(id) {
-    return await Cliente.findByPk(id);
-  }
-
-  async selectClientsByStatus(status) {
-    return await Cliente.findAll({ where: { status } });
-  }
-
   async getClients(limit = 50) {
-    const clients = await Cliente.findAll({
-      attributes: ['email', 'nome'],
-      where: { status: 'ATIVO' },
-      limit,
-    });
+    const rows = await sequelize.query(
+      `SELECT nome, email FROM \`${CLIENT_LIST_TABLE}\` LIMIT :limit`,
+      {
+        replacements: { limit: Number(limit) || 50 },
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
 
-    return clients.map((client) => ({
+    return rows.map((client) => ({
       email: client.email,
       name: client.nome,
     }));
-  }
-
-  async insertClient(client) {
-    return await Cliente.create(client);
-  }
-
-  async updateClient(id, client) {
-    return await Cliente.update(client, { where: { id } });
-  }
-
-  async deleteClient(id) {
-    return await Cliente.destroy({ where: { id } });
   }
 }
 
