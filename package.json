@@ -6,6 +6,7 @@
   "type": "commonjs",
   "scripts": {
     "start": "node src/server.js",
+    "gerar": "node src/gerarTokenTeste.js",
     "test": "node --test"
   },
   "dependencies": {
