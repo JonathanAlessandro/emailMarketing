@@ -3,6 +3,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const emailRoutes = require('./routes/emailRoutes');
+const unsubscribeRoute = require('./routes/unsubscribeRoute');
 const errorHandler = require('./middlewares/errorHandler');
 
 const app = express();
@@ -16,6 +17,7 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/api/emails', emailRoutes);
+app.use('/', unsubscribeRoute); // rota de descadastro disponível em /descadastro
 
 app.use(errorHandler);
 

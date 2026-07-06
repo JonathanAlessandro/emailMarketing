@@ -1,9 +1,17 @@
 const path = require('path');
 const ejs = require('ejs');
+const crypto = require('crypto');
 const brevo = require('../config/brevo');
 const EmailLog = require('../models/emailLog');
+const Cliente = require('../models/cliente');
 const { getClients } = require('../models/clientListModel');
 require('dotenv').config();
+
+function gerarTokenDescadastro(clienteId) {
+  return crypto.createHash('sha256')
+    .update(`${clienteId}-${process.env.UNSUBSCRIBE_SECRET}`)
+    .digest('hex');
+}
 
 async function sendClientListEmails(req, res, next) {
   const { subject, link, limit = 50 } = req.body;
@@ -16,13 +24,27 @@ async function sendClientListEmails(req, res, next) {
     }
 
     const templatePath = path.join(__dirname, '../views/emailTemplates/welcome.ejs');
+    const baseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
     const results = [];
 
     for (const client of clients) {
+      let signOutLink = null;
+
+      if (client.id) {
+        const token = gerarTokenDescadastro(client.id);
+        signOutLink = `${baseUrl}/descadastro?token=${token}&id=${client.id}`;
+
+        const cliente = await Cliente.findByPk(client.id);
+        if (cliente) {
+          await cliente.update({ unsubscribeToken: token });
+        }
+      }
+
       const htmlContent = await ejs.renderFile(templatePath, {
         name: client.name || client.email,
         emailCliente: client.email,
         link,
+        signOutLink,
       });
 
       const sendSmtpEmail = {

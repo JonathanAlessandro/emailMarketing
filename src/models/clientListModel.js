@@ -5,7 +5,7 @@ const CLIENT_LIST_TABLE = String(process.env.CLIENT_LIST_TABLE || 'clientes_list
 class ClienteModel {
   async getClients(limit = 50) {
     const rows = await sequelize.query(
-      `SELECT nome, email FROM \`${CLIENT_LIST_TABLE}\` LIMIT :limit`,
+      `SELECT id, nome, email FROM \`${CLIENT_LIST_TABLE}\` LIMIT :limit`,
       {
         replacements: { limit: Number(limit) || 50 },
         type: sequelize.QueryTypes.SELECT,
@@ -13,6 +13,7 @@ class ClienteModel {
     );
 
     return rows.map((client) => ({
+      id: client.id,
       email: client.email,
       name: client.nome,
     }));
